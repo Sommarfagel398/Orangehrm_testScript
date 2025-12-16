@@ -1,0 +1,13 @@
+
+## How to run tests
+
+From the project root (where `config.py` is located), run:
+
+
+To run a single test file:
+
+pytest tests/test_login.py
+pytest tests/test_dashboard.py
+
+
+

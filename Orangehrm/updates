@@ -1,0 +1,7 @@
+updates in config.test
+
+-added a variable that determines if the website is in English Language
+(notice a website language keeps changing anytime a testing is in process)
+
+-added a pytest.mark.skipif in each test_scripts(test_login.py,test_dashboard.py)
+(hope it works ig)

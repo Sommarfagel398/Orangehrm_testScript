@@ -1,0 +1,47 @@
+To run a test report in each test
+
+first you must install the dependencies
+
+1.pip install pytest -html
+
+second is to create a directory folder at your current root folder (for example: Orangehrm)
+
+2.mkdir reports (folder)
+
+third, type this or copy this to the terminal bash
+
+3.pytest --browser=(Any browser you prefer to use) --html=reports/orangehrm.html
+
+fourth is try implementing this method under your conftest.py (for error screenshotting, hooking the report files to report folder)
+
+this runs the pytest before it hooks a pytest configuration and ensures if the report folder and the Html is set first
+
+@pytest.hookimpl(tryfirst=True)
+def pytest_configure(config):
+
+this part confirms if the reports folder exist or not(if not it will create automatically a folder)
+
+    if not os.path.exists("reports"):
+        os.makedirs("reports")
+
+this part configures options of html file path by renaming the file and stating the datetime of report file (for easier tracking)
+
+    if not getattr(config.option, "htmlpath", None):
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        config.option.htmlpath = f"reports/orangehrm_report_{timestamp}.html"
+
+
+this part hooks reports if one test method fails it will return a screenshot
+
+@pytest.hookimpl(hookwrapper=True)
+def pytest_runtest_makereport(item, call):
+    outcome = yield
+    report = outcome.get_result()
+
+    if report.when == "call" and report.failed:
+        driver = getattr(item.instance, "driver", None)
+        if driver:
+            screenshot = driver.get_screenshot_as_png()
+            report.extra = getattr(report, "extra", [])
+            report.extra.append(pytest_html.extras.png(screenshot))
+
